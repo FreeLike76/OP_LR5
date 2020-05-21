@@ -1,20 +1,68 @@
-// OP_LR5.cpp : This file contains the 'main' function. Program execution begins and ends there.
-//
-
 #include <iostream>
+#include <sstream>
+#include <stack>
 
-int main()
-{
-    std::cout << "Hello World!\n";
+using namespace std;
+
+//Copied here as a start
+string infixToPostfix(const std::string& infix) { 
+	const std::string ops = "-+/*^";
+	std::stringstream ss;
+	std::stack<int> s;
+
+	std::stringstream input(infix);
+	std::string token;
+	while (std::getline(input, token, ' ')) {
+		if (token.empty()) {
+			continue;
+		}
+
+		char c = token[0];
+		size_t idx = ops.find(c);
+
+		// check for operator
+		if (idx != std::string::npos) {
+			while (!s.empty()) {
+				int prec2 = s.top() / 2;
+				int prec1 = idx / 2;
+				if (prec2 > prec1 || (prec2 == prec1 && c != '^')) {
+					ss << ops[s.top()] << ' ';
+					s.pop();
+				}
+				else break;
+			}
+			s.push(idx);
+		}
+		else if (c == '(') {
+			s.push(-2); // -2 stands for '('
+		}
+		else if (c == ')') {
+			// until '(' on stack, pop operators.
+			while (s.top() != -2) {
+				ss << ops[s.top()] << ' ';
+				s.pop();
+			}
+			s.pop();
+		}
+		else {
+			ss << token << ' ';
+		}
+	}
+
+	while (!s.empty()) {
+		ss << ops[s.top()] << ' ';
+		s.pop();
+	}
+
+	return ss.str();
 }
 
-// Run program: Ctrl + F5 or Debug > Start Without Debugging menu
-// Debug program: F5 or Debug > Start Debugging menu
 
-// Tips for Getting Started: 
-//   1. Use the Solution Explorer window to add/manage files
-//   2. Use the Team Explorer window to connect to source control
-//   3. Use the Output window to see build output and other messages
-//   4. Use the Error List window to view errors
-//   5. Go to Project > Add New Item to create new code files, or Project > Add Existing Item to add existing code files to the project
-//   6. In the future, to open this project again, go to File > Open > Project and select the .sln file
+
+int main() {
+	string infix = "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3";
+	cout << "infix:   " << infix << '\n';
+	cout << "postfix: " << infixToPostfix(infix) << '\n';
+
+	return 0;
+}
