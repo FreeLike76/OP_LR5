@@ -3,13 +3,15 @@
 #include <stack>
 #include <string>
 #include <vector>
-
+#include <fstream>
+#define defPATH "Math.txt"
 using namespace std;
 
 
 //	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Headers for functions
 string infixToPostfix(const std::string& infix);
 bool is_operator(string a);
+vector<string> readFile(string path);
 //	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Node struct
 struct Node
 {
@@ -72,13 +74,19 @@ public:
 	}
 };
 //	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	MAIN
-int main() {
-	string infix = "a = 3 + 4 * 7";
-	cout << "infix:   " << infix << '\n';
-	cout << "postfix: " << infixToPostfix(infix) << '\n';
-	StList Tree;
-	Tree.buildExpr(infixToPostfix(infix));
-	Tree.readTree(0);
+int main() 
+{
+	string path = defPATH;
+	vector<string> allInfix = readFile(path);
+	cout << "infix:   " << allInfix[0] << '\n';
+	cout << "postfix: " << infixToPostfix(allInfix[0]) << '\n';
+	cout << "infix:   " << allInfix[1] << '\n';
+	cout << "postfix: " << infixToPostfix(allInfix[1]) << '\n';
+	cout << "infix:   " << allInfix[2] << '\n';
+	cout << "postfix: " << infixToPostfix(allInfix[2]) << '\n';
+	//StList Tree;
+	//Tree.buildExpr(infixToPostfix(infix));
+	//Tree.readTree(0);
 
 	return 0;
 }
@@ -142,4 +150,19 @@ bool is_operator(string a)
 	if (a == "=" || a == "+" || a == "-" || a == "*" || a == "/" || a == "^")
 		return true;
 	return false;
+}
+
+vector<string> readFile(string path)
+{
+	ifstream input;
+	input.open(path);
+	vector<string> lines;
+	while (!input.eof())
+	{
+		string temp;
+		getline(input, temp);
+		temp.pop_back();
+		lines.push_back(temp);
+	}
+	return lines;
 }
