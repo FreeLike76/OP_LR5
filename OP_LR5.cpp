@@ -12,6 +12,17 @@ using namespace std;
 string infixToPostfix(const std::string& infix);
 bool is_operator(string a);
 vector<string> readFile(string path);
+//	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Pair struct
+struct name_double
+{
+	string name;
+	double value;
+	name_double(string name, double value)
+	{
+		this->name = name;
+		this->value = value;
+	}
+};
 //	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Node struct
 struct Node
 {
