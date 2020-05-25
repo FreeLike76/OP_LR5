@@ -1,12 +1,92 @@
 #include <iostream>
 #include <sstream>
 #include <stack>
+#include <string>
+#include <vector>
 
 using namespace std;
 
-//Copied here as a start
-string infixToPostfix(const std::string& infix) { 
-	const std::string ops = "-+/*^";
+
+//	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Headers for functions
+string infixToPostfix(const std::string& infix);
+bool is_operator(string a);
+//	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Node struct
+struct Node
+{
+	string data;
+	Node* left;
+	Node* right;
+	Node(string data)
+	{
+		this->data = data;
+		left = nullptr;
+		right = nullptr;
+	}
+};
+//	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Tree Class
+class StList
+{
+private:
+	void readTreeUtil(Node* cur)
+	{
+		if (cur->left != nullptr)
+			readTreeUtil(cur->left);
+		if (cur->right != nullptr)
+			readTreeUtil(cur->right);
+		cout << cur->data << endl;
+	}
+public:
+	vector<Node*> parts;
+	void buildExpr(string postf)
+	{
+		string temp;
+		vector<Node* > stack;
+		for (int i = 0; i < postf.size(); i++)
+		{
+			if (postf[i] != ' ')
+			{
+				temp += postf[i];
+			}
+			else if (!is_operator(temp))
+			{
+				Node* a = new Node(temp);
+				stack.push_back(a);
+				temp.clear();
+			}
+			else
+			{
+				Node* a = new Node(temp);
+				a->left = stack.back();
+				stack.pop_back();
+				a->right = stack.back();
+				stack.pop_back();
+				stack.push_back(a);
+				temp.clear();
+			}
+		}
+		parts.push_back(stack.front());
+	}
+	void readTree(int index)
+	{
+		readTreeUtil(parts[index]);
+	}
+};
+//	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	MAIN
+int main() {
+	string infix = "a = 3 + 4 * 7";
+	cout << "infix:   " << infix << '\n';
+	cout << "postfix: " << infixToPostfix(infix) << '\n';
+	StList Tree;
+	Tree.buildExpr(infixToPostfix(infix));
+	Tree.readTree(0);
+
+	return 0;
+}
+
+//	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Functions
+
+string infixToPostfix(const std::string& infix) {
+	const std::string ops = "=-+/*^";
 	std::stringstream ss;
 	std::stack<int> s;
 
@@ -57,12 +137,9 @@ string infixToPostfix(const std::string& infix) {
 	return ss.str();
 }
 
-
-
-int main() {
-	string infix = "3 + 4 * 2 / ( 1 - 5 ) ^ 2 ^ 3";
-	cout << "infix:   " << infix << '\n';
-	cout << "postfix: " << infixToPostfix(infix) << '\n';
-
-	return 0;
+bool is_operator(string a)
+{
+	if (a == "=" || a == "+" || a == "-" || a == "*" || a == "/" || a == "^")
+		return true;
+	return false;
 }
