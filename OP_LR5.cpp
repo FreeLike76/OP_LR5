@@ -142,15 +142,14 @@ int main()
 {
 	string path = defPATH;
 	vector<string> allInfix = readFile(path);
-	cout << "infix:   " << allInfix[0] << '\n';
-	cout << "postfix: " << infixToPostfix(allInfix[0]) << '\n';
-	cout << "infix:   " << allInfix[1] << '\n';
-	cout << "postfix: " << infixToPostfix(allInfix[1]) << '\n';
-	cout << "infix:   " << allInfix[2] << '\n';
-	cout << "postfix: " << infixToPostfix(allInfix[2]) << '\n';
-	//StList Tree;
-	//Tree.buildExpr(infixToPostfix(infix));
-	//Tree.readTree(0);
+	StList Tree;
+	for (int i = 0; i < allInfix.size(); i++)
+	{
+		Tree.buildExpr(infixToPostfix(allInfix[i]));
+		cout << "Branch " << i + 1<<endl;
+		Tree.readTree(i);
+	}
+	cout <<"Result: "<< Tree.calculateTree();
 
 	return 0;
 }
