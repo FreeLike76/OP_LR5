@@ -29,11 +29,13 @@ struct Node
 	string data;
 	Node* left;
 	Node* right;
-	Node(string data)
+	bool is_op;
+	Node(string data,bool is_oper=false)
 	{
 		this->data = data;
 		left = nullptr;
 		right = nullptr;
+		this->is_op = is_oper;
 	}
 };
 //	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	Tree Class
@@ -48,8 +50,51 @@ private:
 			readTreeUtil(cur->right);
 		cout << cur->data << endl;
 	}
+	double returnVar(string name)
+	{
+		for (int i = 0; i < this->var_data.size(); i++)
+		{
+			if (this->var_data[i].name == name)
+				return this->var_data[i].value;
+		}
+		return stod(name);
+	}
+	double calculateTreeUtil(Node* cur)
+	{
+		if (cur->is_op)
+		{
+			if (cur->data == "=")
+			{
+				name_double add(cur->left->data, calculateTreeUtil(cur->right));
+				var_data.push_back(add);
+			}
+			else if (cur->data == "+")
+			{
+				return calculateTreeUtil(cur->left) + calculateTreeUtil(cur->right);
+			}
+			else if (cur->data == "-")
+			{
+				return calculateTreeUtil(cur->left) - calculateTreeUtil(cur->right);
+			}
+			else if (cur->data == "*")
+			{
+				return calculateTreeUtil(cur->left) * calculateTreeUtil(cur->right);
+			}
+			else if (cur->data == "/")
+			{
+				return calculateTreeUtil(cur->left) / calculateTreeUtil(cur->right);
+			}
+			else if (cur->data == "^")
+			{
+				return pow(calculateTreeUtil(cur->left) , calculateTreeUtil(cur->right));
+			}
+		}
+		else
+			return returnVar(cur->data);
+	}
 public:
 	vector<Node*> parts;
+	vector<name_double> var_data;
 	void buildExpr(string postf)
 	{
 		string temp;
@@ -68,10 +113,10 @@ public:
 			}
 			else
 			{
-				Node* a = new Node(temp);
-				a->left = stack.back();
-				stack.pop_back();
+				Node* a = new Node(temp,true);
 				a->right = stack.back();
+				stack.pop_back();
+				a->left = stack.back();
 				stack.pop_back();
 				stack.push_back(a);
 				temp.clear();
@@ -82,6 +127,14 @@ public:
 	void readTree(int index)
 	{
 		readTreeUtil(parts[index]);
+	}
+	double calculateTree()
+	{
+		for (int i = 0; i < parts.size()-1; i++)
+		{
+			calculateTreeUtil(parts[i]);
+		}
+		return calculateTreeUtil(parts.back());
 	}
 };
 //	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	=	MAIN
